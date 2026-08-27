@@ -60,7 +60,7 @@ public class SpringConfig {
                         .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
                         .anyRequest().denyAll()
                 )
-                .formLogin(Customizer.withDefaults())
+//                .formLogin(Customizer.withDefaults())
                 .oauth2Login(oauth -> oauth
                         .successHandler(oAuth2LoginSuccessHandler))
                 .authenticationProvider(authenticationProvider())
