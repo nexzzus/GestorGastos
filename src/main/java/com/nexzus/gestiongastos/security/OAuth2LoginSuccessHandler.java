@@ -23,6 +23,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
 
+    @org.springframework.beans.factory.annotation.Value("${FRONTEND_URL:http://localhost:5173}")
+    private String frontendUrl;
+
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
@@ -57,9 +60,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 );
 
         String token = jwtUtils.generateToken(userDetails);
+// Redirige dinámicamente a la URL configurada (ya sea Vercel o Localhost)
+        String targetUrl = frontendUrl + "/auth/callback?token=" + token;
 
-        response.sendRedirect(
-                "http://localhost:5173/auth/callback?token=" + token
-        );
+        response.sendRedirect(targetUrl);
     }
 }
