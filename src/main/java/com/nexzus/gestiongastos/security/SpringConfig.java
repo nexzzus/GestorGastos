@@ -84,7 +84,9 @@ public class SpringConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         var configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
-                List.of("https://frontgestorgastos-fof5bx1rz-munozomateo-4072s-projects.vercel.app")
+                List.of("https://frontgestorgastos-fof5bx1rz-munozomateo-4072s-projects.vercel.app",
+                        "https://frontgestorgastos-munozomateo-4072s-projects.vercel.app",
+                        "http://localhost:5173")
         );
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
