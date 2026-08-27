@@ -86,6 +86,7 @@ public class SpringConfig {
         configuration.setAllowedOrigins(
                 List.of("https://frontgestorgastos-fof5bx1rz-munozomateo-4072s-projects.vercel.app",
                         "https://frontgestorgastos-munozomateo-4072s-projects.vercel.app",
+                        "https://frontgestorgastos.vercel.app",
                         "http://localhost:5173")
         );
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
