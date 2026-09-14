@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * DTO for {@link Category}
  */
-public record CreateCategoryDto(
+public record CategoryRequestDto(
         @NotNull(message = "El nombre de la categoría es requerida")
         CategoryEnum name) implements Serializable {
 }

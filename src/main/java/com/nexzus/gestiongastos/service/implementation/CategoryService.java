@@ -1,11 +1,11 @@
 package com.nexzus.gestiongastos.service.implementation;
 
 import com.nexzus.gestiongastos.config.Mapper;
-import com.nexzus.gestiongastos.dto.request.CreateCategoryDto;
+import com.nexzus.gestiongastos.dto.request.CategoryRequestDto;
 import com.nexzus.gestiongastos.exception.DuplicateResourceException;
 import com.nexzus.gestiongastos.exception.ResourceNotFoundException;
 import com.nexzus.gestiongastos.model.Category;
-import com.nexzus.gestiongastos.model.CategoryResponseDto;
+import com.nexzus.gestiongastos.dto.response.CategoryResponseDto;
 import com.nexzus.gestiongastos.repository.CategoryRepository;
 import com.nexzus.gestiongastos.service.abstraction.ICategoryService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class CategoryService implements ICategoryService {
     private final Mapper mapper;
 
     @Override
-    public CategoryResponseDto create(CreateCategoryDto request) {
+    public CategoryResponseDto create(CategoryRequestDto request) {
         if (categoryRepository.existsByName(request.name())){
             throw new DuplicateResourceException("Categoría", "nombre", request.name());
         }
@@ -49,7 +49,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public CategoryResponseDto updateById(UUID id, CreateCategoryDto request) {
+    public CategoryResponseDto updateById(UUID id, CategoryRequestDto request) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría", "id", id.toString()));
 

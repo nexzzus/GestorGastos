@@ -1,5 +1,6 @@
-package com.nexzus.gestiongastos.model;
+package com.nexzus.gestiongastos.dto.response;
 
+import com.nexzus.gestiongastos.model.Category;
 import com.nexzus.gestiongastos.model.enums.CategoryEnum;
 
 import java.io.Serializable;

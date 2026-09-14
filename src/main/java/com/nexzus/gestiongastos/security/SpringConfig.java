@@ -64,6 +64,13 @@ public class SpringConfig {
                         .requestMatchers(HttpMethod.GET, "/api/category/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/category/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/category/**").authenticated()
+
+                        // EXPENSE
+                        .requestMatchers(HttpMethod.POST, "/api/expense").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/expense").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/expense/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/expense/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/expense/**").authenticated()
                         .anyRequest().denyAll()
                 )
 //                .formLogin(Customizer.withDefaults())

@@ -1,6 +1,5 @@
 package com.nexzus.gestiongastos.dto.response;
 
-import com.nexzus.gestiongastos.model.CategoryResponseDto;
 import com.nexzus.gestiongastos.model.enums.PaymentMethodEnum;
 
 import java.io.Serializable;

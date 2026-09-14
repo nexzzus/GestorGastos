@@ -1,7 +1,7 @@
 package com.nexzus.gestiongastos.controller;
 
-import com.nexzus.gestiongastos.dto.request.CreateCategoryDto;
-import com.nexzus.gestiongastos.model.CategoryResponseDto;
+import com.nexzus.gestiongastos.dto.request.CategoryRequestDto;
+import com.nexzus.gestiongastos.dto.response.CategoryResponseDto;
 import com.nexzus.gestiongastos.service.abstraction.ICategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class CategoryController {
     private final ICategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> create(@RequestBody @Valid CreateCategoryDto request) {
+    public ResponseEntity<CategoryResponseDto> create(@RequestBody @Valid CategoryRequestDto request) {
         return new ResponseEntity<>(categoryService.create(request), HttpStatus.CREATED);
     }
 
@@ -48,7 +48,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryResponseDto> update(@RequestBody @Valid CreateCategoryDto request,
+    public ResponseEntity<CategoryResponseDto> update(@RequestBody @Valid CategoryRequestDto request,
                                                       @PathVariable UUID id) {
         return new ResponseEntity<>(categoryService.updateById(id, request), HttpStatus.OK);
     }
