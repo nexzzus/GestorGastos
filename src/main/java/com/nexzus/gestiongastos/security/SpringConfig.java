@@ -59,8 +59,11 @@ public class SpringConfig {
                         // OBTENER USUARIO ACTUAL
                         .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
                         // CATEGORY
-                        .requestMatchers(HttpMethod.POST, "/api/category").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/category").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/category").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/category").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/category/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/category/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/category/**").authenticated()
                         .anyRequest().denyAll()
                 )
 //                .formLogin(Customizer.withDefaults())
