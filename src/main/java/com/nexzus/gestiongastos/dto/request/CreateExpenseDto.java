@@ -1,5 +1,6 @@
 package com.nexzus.gestiongastos.dto.request;
 
+import com.nexzus.gestiongastos.model.enums.PaymentMethodEnum;
 import jakarta.validation.constraints.Negative;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -26,5 +27,7 @@ public record CreateExpenseDto(
         @Past(message = "La fecha debe ser mayor a la fecha actual")
         LocalDateTime createdAt,
         UUID categoryId,
-        UUID userId, String description) implements Serializable {
+        UUID userId,
+        String description,
+        PaymentMethodEnum paymentMethod) implements Serializable {
 }

@@ -2,6 +2,7 @@ package com.nexzus.gestiongastos.config;
 
 import com.nexzus.gestiongastos.dto.request.CreateExpenseDto;
 import com.nexzus.gestiongastos.dto.request.CreateUser;
+import com.nexzus.gestiongastos.dto.response.ExpenseResponseDto;
 import com.nexzus.gestiongastos.dto.response.UserResponse;
 import com.nexzus.gestiongastos.model.Category;
 import com.nexzus.gestiongastos.dto.request.CreateCategoryDto;
@@ -15,7 +16,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@org.mapstruct.Mapper(componentModel = "spring")
+@org.mapstruct.Mapper(componentModel = "spring", uses = {Mapper.class, Mapper.class})
 public interface Mapper {
     // CREATE_USER TO USER
     @Mapping(target = "password", ignore = true)
@@ -46,4 +47,16 @@ public interface Mapper {
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Expense partialUpdate(CreateExpenseDto createExpenseDto, @MappingTarget Expense expense);
+
+    User toEntity(UserResponse userResponse);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    User partialUpdate(UserResponse userResponse, @MappingTarget User user);
+
+    Expense toEntity(ExpenseResponseDto expenseResponseDto);
+
+    ExpenseResponseDto toDto1(Expense expense);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Expense partialUpdate(ExpenseResponseDto expenseResponseDto, @MappingTarget Expense expense);
 }
