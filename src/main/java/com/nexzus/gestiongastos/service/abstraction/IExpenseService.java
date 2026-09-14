@@ -13,4 +13,5 @@ public interface IExpenseService {
     void deleteById(UUID id);
     ExpenseResponseDto updateById(UUID id, ExpenseRequestDto request);
     Page<ExpenseResponseDto> getAll(Pageable pageable);
+    Page<ExpenseResponseDto> getAllByUserId(UUID userId, Pageable pageable);
 }

@@ -88,4 +88,14 @@ public class ExpenseService implements IExpenseService {
         return expenseRepository.findAll(pageable)
                 .map(mapper::toDto1);
     }
+
+    @Override
+    public Page<ExpenseResponseDto> getAllByUserId(UUID userId, Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("Usuario", "id", userId.toString());
+        }
+
+        return expenseRepository.findAllByUserId(userId, pageable)
+                .map(mapper::toDto1);
+    }
 }

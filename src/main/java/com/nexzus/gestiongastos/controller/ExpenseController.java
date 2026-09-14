@@ -51,4 +51,9 @@ public class ExpenseController {
                                                      @RequestBody @Valid ExpenseRequestDto request) {
         return ResponseEntity.ok(expenseService.updateById(id, request));
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Page<ExpenseResponseDto>> getAllByUserId(@PathVariable UUID userId, Pageable pageable) {
+        return ResponseEntity.ok(expenseService.getAllByUserId(userId, pageable));
+    }
 }

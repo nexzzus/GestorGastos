@@ -68,6 +68,7 @@ public class SpringConfig {
                         // EXPENSE
                         .requestMatchers(HttpMethod.POST, "/api/expense").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/expense").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/expense/user/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/expense/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/expense/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/expense/**").authenticated()
