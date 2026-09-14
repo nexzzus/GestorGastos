@@ -31,7 +31,7 @@ public class SpringConfig {
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
@@ -58,6 +58,9 @@ public class SpringConfig {
 
                         // OBTENER USUARIO ACTUAL
                         .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
+                        // CATEGORY
+                        .requestMatchers(HttpMethod.POST, "/api/category").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/category").permitAll()
                         .anyRequest().denyAll()
                 )
 //                .formLogin(Customizer.withDefaults())
