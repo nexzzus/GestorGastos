@@ -10,5 +10,6 @@ import java.io.Serializable;
  * DTO for {@link Category}
  */
 public record CreateCategoryDto(
-        @NotNull(message = "El nombre de la categoría es requerida") CategoryEnum name) implements Serializable {
+        @NotNull(message = "El nombre de la categoría es requerida")
+        CategoryEnum name) implements Serializable {
 }

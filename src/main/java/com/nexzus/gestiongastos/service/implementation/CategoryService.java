@@ -9,6 +9,7 @@ import com.nexzus.gestiongastos.model.CategoryResponseDto;
 import com.nexzus.gestiongastos.repository.CategoryRepository;
 import com.nexzus.gestiongastos.service.abstraction.ICategoryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CategoryService implements ICategoryService {
     private final CategoryRepository categoryRepository;
     private final Mapper mapper;
