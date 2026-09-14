@@ -10,5 +10,6 @@ import java.util.UUID;
 public interface CategoryRepository extends JpaRepository<Category, UUID> {
     boolean existsByName(CategoryEnum name);
 
+    @Override
     Optional<Category> findById(UUID id);
 }
