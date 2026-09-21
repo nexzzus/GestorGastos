@@ -72,6 +72,14 @@ public class SpringConfig {
                         .requestMatchers(HttpMethod.GET, "/api/expense/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/expense/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/expense/**").authenticated()
+
+                        // BUDGET
+                        .requestMatchers(HttpMethod.POST, "/api/budget").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/budget").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/budget/user/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/budget/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/budget/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/budget/**").authenticated()
                         .anyRequest().denyAll()
                 )
 //                .formLogin(Customizer.withDefaults())

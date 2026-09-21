@@ -1,11 +1,14 @@
 package com.nexzus.gestiongastos.config;
 
+import com.nexzus.gestiongastos.dto.request.BudgetRequestDto;
 import com.nexzus.gestiongastos.dto.request.CategoryRequestDto;
 import com.nexzus.gestiongastos.dto.request.CreateUser;
 import com.nexzus.gestiongastos.dto.request.ExpenseRequestDto;
+import com.nexzus.gestiongastos.dto.response.BudgetResponseDto;
 import com.nexzus.gestiongastos.dto.response.CategoryResponseDto;
 import com.nexzus.gestiongastos.dto.response.ExpenseResponseDto;
 import com.nexzus.gestiongastos.dto.response.UserResponse;
+import com.nexzus.gestiongastos.model.Budget;
 import com.nexzus.gestiongastos.model.Category;
 import com.nexzus.gestiongastos.model.Expense;
 import com.nexzus.gestiongastos.model.User;
@@ -40,4 +43,20 @@ public interface Mapper {
     Expense partialUpdate(ExpenseRequestDto createExpenseDto, @MappingTarget Expense expense);
 
     ExpenseResponseDto toDto1(Expense expense);
+
+    Budget toEntity(BudgetRequestDto budgetRequestDto);
+
+    BudgetRequestDto toDto(Budget budget);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Budget partialUpdate(BudgetRequestDto budgetRequestDto, @MappingTarget Budget budget);
+
+    Budget toEntity(BudgetResponseDto budgetResponseDto);
+
+
+    @Mapping(target = "category", source = "category")
+    BudgetResponseDto toDto1(Budget budget);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Budget partialUpdate(BudgetResponseDto budgetResponseDto, @MappingTarget Budget budget);
 }
