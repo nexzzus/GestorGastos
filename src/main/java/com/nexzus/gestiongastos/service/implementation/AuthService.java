@@ -59,10 +59,10 @@ public class AuthService implements IAuthService {
     @Override
     public AuthResponse login(LoginRequest request){
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(()-> new BadCredentialsException("Credenciales incorrectas"));
+                .orElseThrow(()-> new com.nexzus.gestiongastos.exception.BadCredentialsException("Credenciales incorrectas"));
 
         if (!encoder.matches(request.password(), user.getPassword())){
-            throw new BadCredentialsException("Credenciales incorrectas");
+            throw new com.nexzus.gestiongastos.exception.BadCredentialsException("Credenciales incorrectas");
         }
         return generateTokenForUser(user);
     }
