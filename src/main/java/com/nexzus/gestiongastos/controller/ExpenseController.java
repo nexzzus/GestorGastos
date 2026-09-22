@@ -2,6 +2,7 @@ package com.nexzus.gestiongastos.controller;
 
 import com.nexzus.gestiongastos.dto.request.ExpenseRequestDto;
 import com.nexzus.gestiongastos.dto.response.ExpenseResponseDto;
+import com.nexzus.gestiongastos.security.jwt.JwtUtils;
 import com.nexzus.gestiongastos.service.abstraction.IExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,10 +26,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ExpenseController {
     private final IExpenseService expenseService;
+    private final JwtUtils jwtUtils;
 
     @PostMapping
-    public ResponseEntity<ExpenseResponseDto> create(@RequestBody @Valid ExpenseRequestDto request) {
-        return new ResponseEntity<>(expenseService.create(request), org.springframework.http.HttpStatus.CREATED);
+    public ResponseEntity<ExpenseResponseDto> create(@RequestBody @Valid ExpenseRequestDto request,    @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        UUID userId = jwtUtils.extractUserId(token);
+        return new ResponseEntity<>(expenseService.create(request, userId), org.springframework.http.HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -48,12 +53,17 @@ public class ExpenseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ExpenseResponseDto> update(@PathVariable UUID id,
-                                                     @RequestBody @Valid ExpenseRequestDto request) {
-        return ResponseEntity.ok(expenseService.updateById(id, request));
+                                                     @RequestBody @Valid ExpenseRequestDto request,
+                                                     @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        UUID userId = jwtUtils.extractUserId(token);
+        return ResponseEntity.ok(expenseService.updateById(id, request, userId));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<Page<ExpenseResponseDto>> getAllByUserId(@PathVariable UUID userId, Pageable pageable) {
+    @GetMapping("/user")
+    public ResponseEntity<Page<ExpenseResponseDto>> getAllByUserId(Pageable pageable,    @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        UUID userId = jwtUtils.extractUserId(token);
         return ResponseEntity.ok(expenseService.getAllByUserId(userId, pageable));
     }
 }

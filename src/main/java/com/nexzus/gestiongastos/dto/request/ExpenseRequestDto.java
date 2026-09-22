@@ -25,7 +25,7 @@ public record ExpenseRequestDto(
         LocalDateTime createdAt,
 
         UUID categoryId,
-        UUID userId,
+//        UUID userId,
         String description,
         PaymentMethodEnum paymentMethod) implements Serializable {
 }

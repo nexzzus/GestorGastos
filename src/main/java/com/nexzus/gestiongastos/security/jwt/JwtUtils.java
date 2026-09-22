@@ -14,6 +14,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -23,7 +24,7 @@ public class JwtUtils {
     @Value("${jwt.accessTokenExpirationMs}")
     private long accessTokenExpirationMs;
 
-    public String buildToken(Map<String, Object> claims, String subject, long expirantionMs){
+    public String buildToken(Map<String, Object> claims, String subject, long expirantionMs) {
         return Jwts.builder()
                 .claims(claims)
                 .subject(subject)
@@ -33,13 +34,24 @@ public class JwtUtils {
                 .compact();
     }
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles",
                 userDetails.getAuthorities()
                         .stream()
                         .map(GrantedAuthority::getAuthority)
                         .toList());
+        return buildToken(claims, userDetails.getUsername(), accessTokenExpirationMs);
+    }
+
+    public String generateToken(UserDetails userDetails, UUID userId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles",
+                userDetails.getAuthorities()
+                        .stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .toList());
+        claims.put("userId", userId);
         return buildToken(claims, userDetails.getUsername(), accessTokenExpirationMs);
     }
 
@@ -52,24 +64,29 @@ public class JwtUtils {
         }
     }
 
-    public boolean isTokenExpired(String token){
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    public String extractUsername(String token){
+    public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public Date extractExpiration(String token){
+    public UUID extractUserId(String token) {
+        String id = extractClaim(token, claims -> (String) claims.get("userId"));
+        return UUID.fromString(id);
+    }
+
+    public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token){
+    private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
@@ -77,12 +94,12 @@ public class JwtUtils {
                 .getPayload();
     }
 
-    private SecretKey getSigningKey(){
+    private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public long getAccesTokenExpiration(){
+    public long getAccesTokenExpiration() {
         return accessTokenExpirationMs;
     }
 }

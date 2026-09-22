@@ -1,9 +1,9 @@
 package com.nexzus.gestiongastos.controller;
 
-import com.nexzus.gestiongastos.dto.request.BudgetRequestDto;
-import com.nexzus.gestiongastos.dto.response.BudgetResponseDto;
+import com.nexzus.gestiongastos.dto.request.IncomeRequestDto;
+import com.nexzus.gestiongastos.dto.response.IncomeResponseDto;
 import com.nexzus.gestiongastos.security.jwt.JwtUtils;
-import com.nexzus.gestiongastos.service.abstraction.IBudgetService;
+import com.nexzus.gestiongastos.service.abstraction.IIncomeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,49 +22,51 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/budget")
+@RequestMapping("/api/income")
 @RequiredArgsConstructor
-public class BudgetController {
-    private final IBudgetService budgetService;
+public class IncomeController {
+    private final IIncomeService incomeService;
     private final JwtUtils jwtUtils;
 
     @PostMapping
-    public ResponseEntity<BudgetResponseDto> create(@RequestBody @Valid BudgetRequestDto request,
+    public ResponseEntity<IncomeResponseDto> create(@RequestBody @Valid IncomeRequestDto request,
                                                     @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         UUID userId = jwtUtils.extractUserId(token);
-        return new ResponseEntity<>(budgetService.create(request, userId), org.springframework.http.HttpStatus.CREATED);
+        return new ResponseEntity<>(incomeService.create(request, userId), org.springframework.http.HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BudgetResponseDto> getById(@PathVariable UUID id) {
-        return ResponseEntity.ok(budgetService.getById(id));
+    public ResponseEntity<IncomeResponseDto> getById(@PathVariable UUID id) {
+        return ResponseEntity.ok(incomeService.getById(id));
     }
 
     @GetMapping
-    public ResponseEntity<Page<BudgetResponseDto>> getAll(Pageable pageable) {
-        return ResponseEntity.ok(budgetService.getAll(pageable));
+    public ResponseEntity<Page<IncomeResponseDto>> getAll(Pageable pageable) {
+        return ResponseEntity.ok(incomeService.getAll(pageable));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        budgetService.delete(id);
+        incomeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BudgetResponseDto> update(@PathVariable UUID id,
-                                                    @RequestBody @Valid BudgetRequestDto request,
+    public ResponseEntity<IncomeResponseDto> update(@PathVariable UUID id,
+                                                    @RequestBody @Valid IncomeRequestDto request,
                                                     @RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.replace("Bearer ", "");
+        String token = authHeader.replace("Bearere ", "");
         UUID userId = jwtUtils.extractUserId(token);
-        return ResponseEntity.ok(budgetService.update(id, request, userId));
+        return ResponseEntity.ok(incomeService.updateById(id, request, userId));
     }
 
     @GetMapping("/user")
-    public ResponseEntity<Page<BudgetResponseDto>> getAllByUserId(Pageable pageable,    @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<Page<IncomeResponseDto>> getAllByUserId(
+            Pageable pageable,
+            @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         UUID userId = jwtUtils.extractUserId(token);
-        return ResponseEntity.ok(budgetService.getAllByUserId(userId, pageable));
+        return ResponseEntity.ok(incomeService.getAllByUserId(userId, pageable));
     }
 }

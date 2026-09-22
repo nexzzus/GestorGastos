@@ -27,7 +27,7 @@ public record BudgetRequestDto(
         LocalDate endDate,
 
         // Opcional: Eliminar si extraes el ID del usuario del token JWT en el servicio
-        UUID userId,
+//        UUID userId,
 
         // Opcional: Mantener @NotNull solo si es obligatorio asociar el presupuesto a una categoría
         UUID categoryId

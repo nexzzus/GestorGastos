@@ -88,7 +88,7 @@ public class AuthService implements IAuthService {
 
     private AuthResponse generateTokenForUser(User user) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-        String accessToken = jwtService.generateToken(userDetails);
+        String accessToken = jwtService.generateToken(userDetails, user.getId());
 
         RefreshToken rf = refreshTokenService.create(user.getId());
 

@@ -39,10 +39,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String firstName = oauthUser.getAttribute("given_name");
         String lastName = oauthUser.getAttribute("family_name");
 
+        User newUser = new User();
+
         User user = userRepository.findByEmail(email)
                 .orElseGet(() -> {
 
-                    User newUser = new User();
 
                     newUser.setEmail(email);
                     newUser.setFirstName(firstName);
@@ -59,7 +60,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                         List.of()
                 );
 
-        String token = jwtUtils.generateToken(userDetails);
+        String token = jwtUtils.generateToken(userDetails, newUser.getId());
 // Redirige dinámicamente a la URL configurada (ya sea Vercel o Localhost)
         String targetUrl = frontendUrl + "/auth/callback?token=" + token;
 

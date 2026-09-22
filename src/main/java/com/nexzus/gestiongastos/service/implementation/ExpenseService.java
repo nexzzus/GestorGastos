@@ -29,17 +29,17 @@ public class ExpenseService implements IExpenseService {
     private final Mapper mapper;
 
     @Override
-    public ExpenseResponseDto create(ExpenseRequestDto request) {
+    public ExpenseResponseDto create(ExpenseRequestDto request, UUID userId) {
         Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría", "id", request.categoryId().toString()));
 
-        User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", request.userId().toString()));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", userId.toString()));
 
         Expense newExpense = mapper.toEntity(request);
         newExpense.setCategory(category);
         newExpense.setUser(user);
-        expenseRepository.save(mapper.toEntity(request));
+        expenseRepository.save(newExpense);
 
         return mapper.toDto1(newExpense);
     }
@@ -59,7 +59,7 @@ public class ExpenseService implements IExpenseService {
     }
 
     @Override
-    public ExpenseResponseDto updateById(UUID id, ExpenseRequestDto request) {
+    public ExpenseResponseDto updateById(UUID id, ExpenseRequestDto request, UUID userId) {
         Expense expense = expenseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Gasto", "id", id.toString()));
 
@@ -71,9 +71,9 @@ public class ExpenseService implements IExpenseService {
             expense.setCategory(category);
         }
 
-        if (request.userId() != null && !request.userId().equals(expense.getUser().getId())) {
-            User user = userRepository.findById(request.userId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", request.userId().toString()));
+        if (userId != null && !userId.equals(expense.getUser().getId())) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", userId.toString()));
             expense.setUser(user);
         }
 

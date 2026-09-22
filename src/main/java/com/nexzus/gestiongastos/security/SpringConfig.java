@@ -60,13 +60,13 @@ public class SpringConfig {
                         .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
                         // CATEGORY
                         .requestMatchers(HttpMethod.POST, "/api/category").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/category").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/category").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/category/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/category/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/category/**").authenticated()
 
                         // EXPENSE
-                        .requestMatchers(HttpMethod.POST, "/api/expense").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/expense").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/expense").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/expense/user/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/expense/**").authenticated()
@@ -80,7 +80,18 @@ public class SpringConfig {
                         .requestMatchers(HttpMethod.GET, "/api/budget/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/budget/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/budget/**").authenticated()
-                        .anyRequest().denyAll()
+
+                        // INCOME
+                        .requestMatchers(HttpMethod.POST, "/api/income").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/income").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/income/user/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/income/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/income/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/income/**").authenticated()
+
+                        // DASHBOARD
+                        .requestMatchers(HttpMethod.GET, "/api/dashboard/**").permitAll()
+                        .anyRequest().permitAll()
                 )
 //                .formLogin(Customizer.withDefaults())
                 .oauth2Login(oauth -> oauth

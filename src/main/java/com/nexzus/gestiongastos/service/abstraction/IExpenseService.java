@@ -8,10 +8,10 @@ import org.springframework.data.domain.Pageable;
 import java.util.UUID;
 
 public interface IExpenseService {
-    ExpenseResponseDto create(ExpenseRequestDto request);
+    ExpenseResponseDto create(ExpenseRequestDto request, UUID userId);
     ExpenseResponseDto getById(UUID id);
     void deleteById(UUID id);
-    ExpenseResponseDto updateById(UUID id, ExpenseRequestDto request);
+    ExpenseResponseDto updateById(UUID id, ExpenseRequestDto request, UUID userId);
     Page<ExpenseResponseDto> getAll(Pageable pageable);
     Page<ExpenseResponseDto> getAllByUserId(UUID userId, Pageable pageable);
 }

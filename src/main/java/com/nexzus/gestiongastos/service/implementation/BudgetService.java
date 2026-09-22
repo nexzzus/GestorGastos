@@ -29,7 +29,7 @@ public class BudgetService implements IBudgetService {
     private final Mapper mapper;
 
     @Override
-    public BudgetResponseDto create(BudgetRequestDto request) {
+    public BudgetResponseDto create(BudgetRequestDto request, UUID userId) {
         Budget newBudget = mapper.toEntity(request);
 
         if (request.categoryId() != null) {
@@ -39,8 +39,8 @@ public class BudgetService implements IBudgetService {
 
         }
 
-        User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", request.userId().toString()));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", userId.toString()));
 
         newBudget.setUser(user);
         budgetRepository.save(newBudget);
@@ -57,7 +57,7 @@ public class BudgetService implements IBudgetService {
     }
 
     @Override
-    public BudgetResponseDto update(UUID id, BudgetRequestDto request) {
+    public BudgetResponseDto update(UUID id, BudgetRequestDto request, UUID userId) {
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Budget", "id", id.toString()));
 
@@ -69,9 +69,9 @@ public class BudgetService implements IBudgetService {
             budget.setCategory(category);
         }
 
-        if (request.userId() != null && !request.userId().equals(budget.getUser().getId())) {
-            User user = userRepository.findById(request.userId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", request.userId().toString()));
+        if (userId != null && !userId.equals(budget.getUser().getId())) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", userId.toString()));
             budget.setUser(user);
         }
 
