@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,11 @@ public class JwtUtils {
     private String secretKey;
     @Value("${jwt.accessTokenExpirationMs}")
     private long accessTokenExpirationMs;
+
+    private static final String REFRESH_TOKEN = "refreshToken";
+    private static final String PATH = "/api/auth";
+
+
 
     public String buildToken(Map<String, Object> claims, String subject, long expirantionMs) {
         return Jwts.builder()
@@ -101,5 +107,15 @@ public class JwtUtils {
 
     public long getAccesTokenExpiration() {
         return accessTokenExpirationMs;
+    }
+
+    public ResponseCookie buildRefreshTokenCookie(String token, long maxAge) {
+        return ResponseCookie.from(REFRESH_TOKEN, token)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path(PATH)
+                .maxAge(maxAge)
+                .build();
     }
 }

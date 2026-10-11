@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -101,6 +103,30 @@ public class BudgetService implements IBudgetService {
         }
 
         return budgetRepository.findAllByUserId(userId, pageable)
-                .map(mapper::toDto1);
+                .map(budget -> {
+                    UUID categoryId = budget.getCategory() != null ? budget.getCategory().getId() : null;
+
+                    BigDecimal spendAmount = expenseByCategory(
+                            categoryId,
+                            userId,
+                            budget.getStartDate().atStartOfDay(),
+                            budget.getEndDate().atTime(23, 59, 59)
+                    );
+
+                    BudgetResponseDto budgetResponseDto = mapper.toDto1(budget);
+                    return new BudgetResponseDto(
+                            budgetResponseDto.id(),
+                            budgetResponseDto.amount(),
+                            spendAmount,
+                            budgetResponseDto.startDate(),
+                            budgetResponseDto.endDate(),
+                            budgetResponseDto.category()
+                    );
+                });
     }
+
+    private BigDecimal expenseByCategory(UUID categoryId, UUID useId, LocalDateTime startDate, LocalDateTime endDate){
+        return budgetRepository.sumExpensesPorBudgets(useId, categoryId, startDate, endDate);
+    }
+
 }

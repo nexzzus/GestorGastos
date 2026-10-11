@@ -1,5 +1,7 @@
 package com.nexzus.gestiongastos.service.implementation;
 
+import com.nexzus.gestiongastos.config.Mapper;
+import com.nexzus.gestiongastos.dto.response.UserResponse;
 import com.nexzus.gestiongastos.exception.ResourceNotFoundException;
 import com.nexzus.gestiongastos.model.User;
 import com.nexzus.gestiongastos.repository.UserRepository;
@@ -12,12 +14,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService implements IUserService {
     private final UserRepository userRepository;
+    private final Mapper mapper;
 
     @Override
-    public User getMe(UserDetails userDetails) {
+    public UserResponse getMe(UserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(()-> new ResourceNotFoundException("User", "email", userDetails.getUsername()));
 
-        return user;
+        return mapper.toUserResponse(user);
     }
 }

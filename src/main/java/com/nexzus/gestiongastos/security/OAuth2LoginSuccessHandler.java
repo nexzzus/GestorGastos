@@ -7,6 +7,8 @@ import com.nexzus.gestiongastos.security.jwt.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -18,12 +20,17 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
+    private final com.nexzus.gestiongastos.service.abstraction.IRefreshTokenService refreshTokenService;
 
-    @org.springframework.beans.factory.annotation.Value("${FRONTEND_URL:http://localhost:5173}")
+    private static final long REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
+
+
+    @org.springframework.beans.factory.annotation.Value("${FRONTEND_URL:http://localhost:4200}")
     private String frontendUrl;
 
     @Override
@@ -39,18 +46,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String firstName = oauthUser.getAttribute("given_name");
         String lastName = oauthUser.getAttribute("family_name");
 
-        User newUser = new User();
-
         User user = userRepository.findByEmail(email)
                 .orElseGet(() -> {
-
-
-                    newUser.setEmail(email);
-                    newUser.setFirstName(firstName);
-                    newUser.setLastName(lastName);
-                    newUser.setProvider(AuthProvider.GOOGLE);
-
-                    return userRepository.save(newUser);
+                    User created = User.builder()
+                            .email(email)
+                            .firstName(firstName)
+                            .lastName(lastName)
+                            .provider(AuthProvider.GOOGLE)
+                            .build();
+                    return userRepository.save(created);
                 });
 
         UserDetails userDetails =
@@ -60,10 +64,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                         List.of()
                 );
 
-        String token = jwtUtils.generateToken(userDetails, newUser.getId());
-// Redirige dinámicamente a la URL configurada (ya sea Vercel o Localhost)
-        String targetUrl = frontendUrl + "/auth/callback?token=" + token;
+        String accessToken = jwtUtils.generateToken(userDetails, user.getId());
 
+        // Create refresh token and set HttpOnly cookie
+        var refreshToken = refreshTokenService.create(user.getId());
+        ResponseCookie cookie = jwtUtils.buildRefreshTokenCookie(refreshToken.getToken(), REFRESH_TOKEN_MAX_AGE);
+        response.addHeader("Set-Cookie", cookie.toString());
+
+        // Redirige dinámicamente a la URL configurada (ya sea Vercel o Localhost)
+        String targetUrl = frontendUrl + "/auth/callback?token=" + accessToken;
         response.sendRedirect(targetUrl);
     }
 }

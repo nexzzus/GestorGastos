@@ -21,8 +21,9 @@ public class DashboardController {
     private final IDashboardService dashboardService;
     private final JwtUtils jwtUtils;
 
-    @GetMapping()
-    public ResponseEntity<DashboardSummaryDto> getDashboard(@RequestHeader("Authorization") String authHeader){
+    @GetMapping
+    public ResponseEntity<DashboardSummaryDto> getDashboard(
+            @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         UUID userId = jwtUtils.extractUserId(token);
         return ResponseEntity.status(HttpStatus.OK).body(dashboardService.getDashboardSummary(userId));

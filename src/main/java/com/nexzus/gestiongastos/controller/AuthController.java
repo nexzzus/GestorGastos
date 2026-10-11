@@ -3,7 +3,6 @@ package com.nexzus.gestiongastos.controller;
 import com.nexzus.gestiongastos.dto.request.CreateUser;
 import com.nexzus.gestiongastos.dto.request.LoginRequest;
 import com.nexzus.gestiongastos.dto.response.AuthResponse;
-import com.nexzus.gestiongastos.exception.ResourceNotFoundException;
 import com.nexzus.gestiongastos.service.abstraction.IAuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
 
@@ -26,7 +26,19 @@ import java.util.Arrays;
 public class AuthController {
     private final IAuthService userService;
 
-    private final String PATH = "/api/auth";
+    private static final String PATH = "/api/auth";
+    private static final String REFRESH_TOKEN = "refreshToken";
+    private static final long REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
+
+    private ResponseCookie buildRefreshTokenCookie(String token, long maxAge) {
+        return ResponseCookie.from(REFRESH_TOKEN, token)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path(PATH)
+                .maxAge(maxAge)
+                .build();
+    }
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
@@ -36,12 +48,7 @@ public class AuthController {
 
         AuthResponse auth = userService.create(request);
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", auth.refreshToken())
-                .httpOnly(true)
-                .secure(false)
-                .path(PATH)
-                .maxAge(7 * 24 * 60 * 60)
-                .build();
+        ResponseCookie cookie = buildRefreshTokenCookie(auth.refreshToken(), REFRESH_TOKEN_MAX_AGE);
         response.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -53,60 +60,66 @@ public class AuthController {
             @Valid
             @RequestBody LoginRequest request,
             HttpServletResponse response
-            ){
+    ) {
         AuthResponse auth = userService.login(request);
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", auth.accessToken())
-                .httpOnly(true)
-                .secure(false)
-                .path(PATH)
-                .maxAge(7 * 24 * 60 * 60)
-                .build();
-
+        ResponseCookie cookie = buildRefreshTokenCookie(auth.refreshToken(), REFRESH_TOKEN_MAX_AGE);
         response.addHeader("Set-Cookie", cookie.toString());
-        return ResponseEntity.status(HttpStatus.OK).body(new AuthResponse(auth.accessToken(), null, auth.expiresIn(), auth.user()));
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new AuthResponse(auth.accessToken(), null, auth.expiresIn(), auth.user()));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             HttpServletRequest request,
             HttpServletResponse response
-    ){
+    ) {
         Cookie[] cookies = request.getCookies();
         String refreshToken = null;
 
-        if (cookies != null){
+        if (cookies != null) {
             refreshToken = Arrays.stream(cookies)
-                    .filter(c -> "refreshToken".equals(c.getName()))
+                    .filter(c -> REFRESH_TOKEN.equals(c.getName()))
                     .findFirst()
                     .map(Cookie::getValue)
                     .orElse(null);
         }
 
-        if (refreshToken != null){
+        if (refreshToken != null) {
             userService.logout(refreshToken);
         }
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
-                .httpOnly(true)
-                .secure(false)
-                .path(PATH)
-                .maxAge(0)
-                .build();
-
+        ResponseCookie cookie = buildRefreshTokenCookie("", 0);
         response.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthResponse> refreshToken(HttpServletRequest request){
-        String refreshToken = Arrays.stream(request.getCookies())
-                .filter(c -> c.getName().equals("refreshToken"))
+    public ResponseEntity<AuthResponse> refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No cookies found in request");
+        }
+
+        String refreshToken = Arrays.stream(cookies)
+                .filter(c -> c.getName().equals(REFRESH_TOKEN))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElseThrow(()-> new ResourceNotFoundException("No refresh token found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No refresh token found"));
 
-        return ResponseEntity.ok().body(userService.refreshToken(refreshToken));
+        AuthResponse auth = userService.refreshToken(refreshToken);
+
+        ResponseCookie cookie = buildRefreshTokenCookie(auth.refreshToken(), REFRESH_TOKEN_MAX_AGE);
+        response.addHeader("Set-Cookie", cookie.toString());
+
+        return ResponseEntity.ok().body(new AuthResponse(auth.accessToken(), null, auth.expiresIn(), auth.user()));
     }
+
 }
+

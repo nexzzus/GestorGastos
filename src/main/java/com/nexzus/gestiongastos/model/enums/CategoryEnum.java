@@ -1,7 +1,9 @@
 package com.nexzus.gestiongastos.model.enums;
 
 public enum CategoryEnum {
-    COMIDA,
+    ALIMENTACION,
+    INGRESO,
+    SERVICIOS,
     TRANSPORTE,
     VIVIENDA,
     SALUD,

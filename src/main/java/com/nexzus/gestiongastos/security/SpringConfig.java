@@ -37,10 +37,13 @@ public class SpringConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(sesssion -> sesssion.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // SPRING ERROR
+                        .requestMatchers("/error").permitAll()
+                        
                         // LOGIN NORMAL
                         .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/auth/**"
+                        HttpMethod.POST,
+                        "/api/auth/**"
                         ).permitAll()
 
                         // GOOGLE OAUTH
@@ -57,7 +60,7 @@ public class SpringConfig {
                         ).permitAll()
 
                         // OBTENER USUARIO ACTUAL
-                        .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/user/me").authenticated()
                         // CATEGORY
                         .requestMatchers(HttpMethod.POST, "/api/category").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/category").permitAll()
@@ -66,7 +69,7 @@ public class SpringConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/category/**").authenticated()
 
                         // EXPENSE
-                        .requestMatchers(HttpMethod.POST, "/api/expense").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/expense").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/expense").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/expense/user/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/expense/**").authenticated()
@@ -82,7 +85,7 @@ public class SpringConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/budget/**").authenticated()
 
                         // INCOME
-                        .requestMatchers(HttpMethod.POST, "/api/income").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/income").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/income").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/income/user/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/income/**").authenticated()
@@ -90,8 +93,11 @@ public class SpringConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/income/**").authenticated()
 
                         // DASHBOARD
-                        .requestMatchers(HttpMethod.GET, "/api/dashboard/**").permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/dashboard/**").authenticated()
+
+                        // TRANSACTIONS
+                        .requestMatchers(HttpMethod.GET, "/api/transaction").authenticated()
+                        .anyRequest().denyAll()
                 )
 //                .formLogin(Customizer.withDefaults())
                 .oauth2Login(oauth -> oauth

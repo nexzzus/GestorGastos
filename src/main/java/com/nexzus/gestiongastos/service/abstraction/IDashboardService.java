@@ -6,5 +6,4 @@ import java.util.UUID;
 
 public interface IDashboardService {
     DashboardSummaryDto getDashboardSummary(UUID userId);
-
 }

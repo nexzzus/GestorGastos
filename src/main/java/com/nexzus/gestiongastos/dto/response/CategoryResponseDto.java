@@ -11,5 +11,7 @@ import java.util.UUID;
  */
 public record CategoryResponseDto(
         UUID id,
-        CategoryEnum name) implements Serializable {
+        CategoryEnum name,
+        String description
+        ) implements Serializable {
 }

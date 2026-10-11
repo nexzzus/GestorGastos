@@ -4,8 +4,10 @@ import com.nexzus.gestiongastos.config.Mapper;
 import com.nexzus.gestiongastos.dto.request.CreateUser;
 import com.nexzus.gestiongastos.dto.request.LoginRequest;
 import com.nexzus.gestiongastos.dto.response.AuthResponse;
+import com.nexzus.gestiongastos.exception.BadCredentialsException;
 import com.nexzus.gestiongastos.exception.BadRequestException;
 import com.nexzus.gestiongastos.exception.DuplicateResourceException;
+import com.nexzus.gestiongastos.exception.ResourceNotFoundException;
 import com.nexzus.gestiongastos.model.RefreshToken;
 import com.nexzus.gestiongastos.model.User;
 import com.nexzus.gestiongastos.model.enums.AuthProvider;
@@ -17,7 +19,6 @@ import com.nexzus.gestiongastos.service.abstraction.IAuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,7 +44,7 @@ public class AuthService implements IAuthService {
             throw new DuplicateResourceException("Usuario", "email", user.email());
         }
 
-        if (!user.password().equals(user.confirmPassword())){
+        if (!user.password().equals(user.confirmPassword())) {
             throw new BadRequestException("Las contraseñas no coinciden");
         }
 
@@ -57,12 +58,12 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public AuthResponse login(LoginRequest request){
+    public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(()-> new com.nexzus.gestiongastos.exception.BadCredentialsException("Credenciales incorrectas"));
+                .orElseThrow(() -> new BadCredentialsException("Credenciales incorrectas"));
 
-        if (!encoder.matches(request.password(), user.getPassword())){
-            throw new com.nexzus.gestiongastos.exception.BadCredentialsException("Credenciales incorrectas");
+        if (!encoder.matches(request.password(), user.getPassword())) {
+            throw new BadCredentialsException("Credenciales incorrectas");
         }
         return generateTokenForUser(user);
     }
@@ -76,14 +77,20 @@ public class AuthService implements IAuthService {
 
     @Override
     public AuthResponse refreshToken(String requestRefreshToken) {
-        return refreshTokenRepository.findByToken(requestRefreshToken)
-                .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
-                .map(user -> {
-                    refreshTokenService.revokeToken(requestRefreshToken);
-                    return generateTokenForUser(user);
-                })
-                .orElseThrow(() -> new BadCredentialsException("RefreshToken no encontrado o inválido"));
+        RefreshToken refreshToken = refreshTokenRepository.findByTokenWithUser(requestRefreshToken)
+                .orElseThrow(() -> new BadCredentialsException("RefreshToken no encontrado: " + requestRefreshToken));
+
+        refreshTokenService.verifyExpiration(refreshToken);
+
+        User user = refreshToken.getUser();
+        refreshTokenService.revokeToken(requestRefreshToken);
+        if (user != null) {
+            return generateTokenForUser(user);
+
+        } else{
+            throw new ResourceNotFoundException("Usuario del refreshToken no encontrado");
+        }
+
     }
 
     private AuthResponse generateTokenForUser(User user) {

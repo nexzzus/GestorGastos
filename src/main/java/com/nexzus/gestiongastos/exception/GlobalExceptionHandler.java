@@ -66,11 +66,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ApiError> handleBadCredentialsException(HttpServletRequest request){
+    @ExceptionHandler({BadCredentialsException.class, org.springframework.security.authentication.BadCredentialsException.class})
+    public ResponseEntity<ApiError> handleBadCredentialsException(Exception ex, HttpServletRequest request){
+        String message = (ex.getMessage() != null && !ex.getMessage().isBlank()) ? ex.getMessage() : "Credenciales incorrectas";
         ApiError apiError = buildError(
                 HttpStatus.UNAUTHORIZED,
-                "Credenciales incorrectas",
+                message,
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);

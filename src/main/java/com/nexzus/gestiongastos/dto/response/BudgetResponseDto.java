@@ -11,6 +11,7 @@ import java.util.UUID;
 public record BudgetResponseDto(
         UUID id,
         BigDecimal amount,
+        BigDecimal spentAmount,    // NUEVO: Lo que se ha gastado realmente
         LocalDate startDate,
         LocalDate endDate,
         CategoryResponseDto category

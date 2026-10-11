@@ -1,7 +1,6 @@
 package com.nexzus.gestiongastos.dto.request;
 
 import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -18,7 +17,7 @@ public record BudgetRequestDto(
         @Positive(message = "El monto debe ser mayor a cero")
         BigDecimal amount,
 
-        @FutureOrPresent(message = "La fecha de inicio no puede ser anterior a hoy")
+//        @FutureOrPresent(message = "La fecha de inicio no puede ser anterior a hoy")
         @NotNull(message = "La fecha de inicio es requerida")
         LocalDate startDate,
 
@@ -26,10 +25,7 @@ public record BudgetRequestDto(
         @NotNull(message = "La fecha de fin es requerida")
         LocalDate endDate,
 
-        // Opcional: Eliminar si extraes el ID del usuario del token JWT en el servicio
-//        UUID userId,
 
-        // Opcional: Mantener @NotNull solo si es obligatorio asociar el presupuesto a una categoría
         UUID categoryId
 ) implements Serializable {
 }

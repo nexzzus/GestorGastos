@@ -3,6 +3,7 @@ package com.nexzus.gestiongastos.dto.request;
 import com.nexzus.gestiongastos.model.Category;
 import com.nexzus.gestiongastos.model.enums.CategoryEnum;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 
@@ -11,5 +12,10 @@ import java.io.Serializable;
  */
 public record CategoryRequestDto(
         @NotNull(message = "El nombre de la categoría es requerida")
-        CategoryEnum name) implements Serializable {
+        CategoryEnum name,
+
+        @NotNull(message = "La descripción de la categoría es requerida")
+        @Size(min = 5, max = 255, message = "La descripción de la categoría debe tener entre {min} y {max} caracteres")
+        String description
+) implements Serializable {
 }

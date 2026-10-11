@@ -8,6 +8,9 @@ public record DashboardSummaryDto(
         BigDecimal totalIncome,
         BigDecimal totalExpense,
         List<CategoryExpenseSummaryDto> expensesByCategory,
+        List<CategoryBudgetSummaryDto> budgetsByCategory,
         List<TransactionSummaryDto> recentActivity
+//        Slice<IncomeResponseDto> incomes,
+//        Slice<ExpenseResponseDto> expenses
 ) {
 }

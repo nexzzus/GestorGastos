@@ -62,7 +62,7 @@ public class BudgetController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<Page<BudgetResponseDto>> getAllByUserId(Pageable pageable,    @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<Page<BudgetResponseDto>> getAllByUserId(Pageable pageable, @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         UUID userId = jwtUtils.extractUserId(token);
         return ResponseEntity.ok(budgetService.getAllByUserId(userId, pageable));
