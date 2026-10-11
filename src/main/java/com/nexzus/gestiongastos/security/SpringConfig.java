@@ -123,7 +123,7 @@ public class SpringConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         var configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
-                List.of("https://front-gestor-gastos.vercel.app",
+                List.of("https://finanzaflow-five.vercel.app",
                         "http://localhost:5173",
                         "http://localhost:4200")
         );
