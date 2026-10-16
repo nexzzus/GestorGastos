@@ -7,6 +7,7 @@ import com.nexzus.gestiongastos.repository.TransactionRepository;
 import com.nexzus.gestiongastos.repository.projection.TransactionProjection;
 import com.nexzus.gestiongastos.service.abstraction.ITransactionService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TransactionService implements ITransactionService {
@@ -22,25 +24,24 @@ public class TransactionService implements ITransactionService {
 
     @Override
     public Slice<TransactionResponseDto> getTransactions(UUID userId, int page, int size) {
-        // Pedimos uno adicional para saber si existe otra página
-        PageRequest pageable = PageRequest.of(page, size + 1);
+        // Retrieve exactly 'size' items for the current page
+        PageRequest pageable = PageRequest.of(page, size);
+        List<TransactionProjection> projections = transactionRepository.findTransactionsByUserId(userId, pageable);
 
-        List<TransactionProjection> projections =
-                transactionRepository.findTransactionsByUserId(
-                        userId,
-                        pageable
-                );
-
-        boolean hasNext = projections.size() > size;
-
-        if (hasNext) {
-            projections = projections.subList(0, size);
+        // Determine if there is a next page by checking if there is at least one item in the following page
+        boolean hasNext = false;
+        if (projections.size() == size) {
+            // Check if the next page has any records
+            List<TransactionProjection> nextPage = transactionRepository.findTransactionsByUserId(
+                    userId,
+                    PageRequest.of(page + 1, 1)
+            );
+            hasNext = !nextPage.isEmpty();
         }
 
-        List<TransactionResponseDto> transactions =
-                projections.stream()
-                        .map(this::toDto)
-                        .toList();
+        List<TransactionResponseDto> transactions = projections.stream()
+                .map(this::toDto)
+                .toList();
 
         return new SliceImpl<>(
                 transactions,
