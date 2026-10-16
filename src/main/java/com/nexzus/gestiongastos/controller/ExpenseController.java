@@ -44,7 +44,7 @@ public class ExpenseController {
     public ResponseEntity<Page<ExpenseResponseDto>> getAll(Pageable pageable) {
         return ResponseEntity.ok(expenseService.getAll(pageable));
     }
-
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         expenseService.deleteById(id);

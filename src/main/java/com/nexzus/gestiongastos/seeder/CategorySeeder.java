@@ -24,6 +24,8 @@ public class CategorySeeder implements CommandLineRunner {
 
         List<Category> categories = Arrays.asList(
                 new Category().builder().name(CategoryEnum.ALIMENTACION).description("Comida y súper").build(),
+                new Category().builder().name(CategoryEnum.ANTOJOS).description("Antojos y mecátos").build(),
+                new Category().builder().name(CategoryEnum.PRESTAMOS).description("Prestamos y deudas").build(),
                 new Category().builder().name(CategoryEnum.INGRESO).description("Entradas de dinero").build(),
                 new Category().builder().name(CategoryEnum.SERVICIOS).description("Facturas básicas").build(),
                 new Category().builder().name(CategoryEnum.TRANSPORTE).description("Movilidad diaria").build(),
