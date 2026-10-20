@@ -124,6 +124,7 @@ public class SpringConfig {
         var configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
                 List.of("https://finanzaflow-five.vercel.app",
+                        "https://localhost",
                         "http://localhost:5173",
                         "http://localhost:4200")
         );
