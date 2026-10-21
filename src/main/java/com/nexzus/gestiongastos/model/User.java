@@ -39,7 +39,6 @@ public class User {
     String firstName;
 
     @Column(length = 32)
-    @NotNull
     String lastName;
 
     @Column(length = 64, unique = true)
