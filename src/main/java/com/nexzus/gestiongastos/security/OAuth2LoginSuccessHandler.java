@@ -71,8 +71,21 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         ResponseCookie cookie = jwtUtils.buildRefreshTokenCookie(refreshToken.getToken(), REFRESH_TOKEN_MAX_AGE);
         response.addHeader("Set-Cookie", cookie.toString());
 
-        // Redirige dinámicamente a la URL configurada (ya sea Vercel o Localhost)
-        String targetUrl = frontendUrl + "/auth/callback?token=" + accessToken;
+        boolean fromApp = request.getCookies() != null
+                && java.util.Arrays.stream(request.getCookies())
+                .anyMatch(c -> AppLoginMarkerFilter.COOKIE_NAME.equals(c.getName())
+                        && "app".equals(c.getValue()));
+
+        String targetUrl;
+        if (fromApp) {
+            // Borrar la cookie marcadora
+            ResponseCookie clear = ResponseCookie.from(AppLoginMarkerFilter.COOKIE_NAME, "")
+                    .httpOnly(true).secure(true).sameSite("Lax").path("/").maxAge(0).build();
+            response.addHeader("Set-Cookie", clear.toString());
+            targetUrl = "com.mateo.gestorgastos://auth/callback?token=" + accessToken;
+        } else {
+            targetUrl = frontendUrl + "/auth/callback?token=" + accessToken;
+        }
         response.sendRedirect(targetUrl);
     }
 }
